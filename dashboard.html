@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Free SMM Panel - Instant Orders</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">
+                <img src="/assets/logo.png" alt="SMM Panel">
+                <span>🚀 Free SMM</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#services" class="active">Services</a></li>
+                <li><a href="#my-orders">Mes Commandes</a></li>
+                <li><a href="#how-it-works">Comment ça marche</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main>
+        <div class="container">
+            <!-- Hero -->
+            <section class="hero-small">
+                <h1>🎯 Instantly Boost Your Social Media</h1>
+                <p>Select your service, choose your country, and get REAL profiles immediately!</p>
+                <div class="features-mini">
+                    <span>⚡ Instant Delivery</span>
+                    <span>🌍 12 Countries</span>
+                    <span>👤 Real Profiles</span>
+                    <span>💰 100% FREE</span>
+                </div>
+            </section>
+
+            <!-- Services Grid -->
+            <section id="services" class="services-section">
+                <h2>📊 Available Services</h2>
+                <div class="filter-bar">
+                    <select id="platformFilter" onchange="filterServices()">
+                        <option value="all">All Platforms</option>
+                        <option value="INSTAGRAM">📸 Instagram</option>
+                        <option value="TIKTOK">🎵 TikTok</option>
+                        <option value="YOUTUBE">▶️ YouTube</option>
+                        <option value="FACEBOOK">👍 Facebook</option>
+                        <option value="TWITTER">🐦 Twitter</option>
+                    </select>
+                    <select id="typeFilter" onchange="filterServices()">
+                        <option value="all">All Types</option>
+                        <option value="DRIP">Drip (Never Drops)</option>
+                        <option value="INSTANT">Instant (Fast)</option>
+                        <option value="TARGETED">Targeted (Country)</option>
+                    </select>
+                </div>
+                <div class="services-grid" id="servicesGrid">
+                    <div class="loading">Loading services...</div>
+                </div>
+            </section>
+
+            <!-- Order Form -->
+            <section id="orderForm" class="order-section" style="display:none;">
+                <div class="card">
+                    <h2>🚀 Place Your Order</h2>
+                    <form id="createOrderForm">
+                        <input type="hidden" id="selectedServiceId">
+                        <div class="form-group">
+                            <label>Selected Service</label>
+                            <p id="selectedServiceName" style="font-weight:bold;color:var(--primary);"></p>
+                        </div>
+                        <div class="form-group">
+                            <label for="targetUrl">Target URL</label>
+                            <input type="url" id="targetUrl" placeholder="https://instagram.com/username" required>
+                            <small>Paste the link to your profile or post</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="orderQuantity">Quantity</label>
+                            <input type="number" id="orderQuantity" min="10" max="10000" value="100" required>
+                            <small id="quantityRange"></small>
+                        </div>
+                        <div class="form-group">
+                            <label for="orderType">Service Type</label>
+                            <select id="orderType" required>
+                                <option value="DRIP">🐢 Drip - Natural, never drops</option>
+                                <option value="INSTANT">⚡ Instant - Fast delivery</option>
+                                <option value="TARGETED">🎯 Targeted - Country specific</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="countryGroup">
+                            <label for="orderCountry">🌍 Select Country</label>
+                            <select id="orderCountry" required>
+                                <option value="CM">🇨🇲 Cameroon</option>
+                                <option value="US">🇺🇸 United States</option>
+                                <option value="GB">🇬🇧 United Kingdom</option>
+                                <option value="FR">🇫🇷 France</option>
+                                <option value="AU">🇦🇺 Australia</option>
+                                <option value="CA">🇨🇦 Canada</option>
+                                <option value="NG">🇳🇬 Nigeria</option>
+                                <option value="ZA">🇿🇦 South Africa</option>
+                                <option value="KE">🇰🇪 Kenya</option>
+                                <option value="SN">🇸🇳 Senegal</option>
+                                <option value="CI">🇨🇮 Ivory Coast</option>
+                                <option value="GH">🇬🇭 Ghana</option>
+                            </select>
+                            <small>All profiles will match this country's names, cities, and culture</small>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-full">🚀 ORDER NOW - Instant Delivery</button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- My Orders -->
+            <section id="my-orders" class="orders-section">
+                <h2>📋 My Orders</h2>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Service</th>
+                                <th>Type</th>
+                                <th>Country</th>
+                                <th>Quantity</th>
+                                <th>Delivered</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ordersList">
+                            <tr><td colspan="8" class="text-center">No orders yet. Place your first order above!</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- How it works -->
+            <section id="how-it-works" class="how-section">
+                <h2>💡 How It Works</h2>
+                <div class="steps">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <h3>Choose Service</h3>
+                        <p>Select the platform and service you want</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <h3>Select Country</h3>
+                        <p>Pick your target country - we match REAL profiles</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <h3>Get Profiles</h3>
+                        <p>We deliver REAL profiles matching your country instantly</p>
+                    </div>
+                </div>
+                <div class="country-match-demo">
+                    <h3>🌍 Country Matching Example</h3>
+                    <div class="demo-grid">
+                        <div class="demo-card">
+                            <h4>🇺🇸 USA</h4>
+                            <p>Sarah Smith from New York 🇺🇸</p>
+                            <p>James Johnson from Los Angeles 🇺🇸</p>
+                            <p>Emma Williams from Chicago 🇺🇸</p>
+                        </div>
+                        <div class="demo-card">
+                            <h4>🇨🇲 Cameroon</h4>
+                            <p>Jean Ngono from Douala 🇨🇲</p>
+                            <p>Marie Essomba from Yaoundé 🇨🇲</p>
+                            <p>Paul Mballa from Bamenda 🇨🇲</p>
+                        </div>
+                        <div class="demo-card">
+                            <h4>🇳🇬 Nigeria</h4>
+                            <p>Chukwudi Adebayo from Lagos 🇳🇬</p>
+                            <p>Amara Okafor from Abuja 🇳🇬</p>
+                            <p>Oluwaseun Adeyemi from Kano 🇳🇬</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>🚀 Free SMM Panel - Instant Delivery - Real Country Profiles</p>
+            <p style="font-size:0.9rem;color:#9CA3AF;">100% FREE - No payment required</p>
+        </div>
+    </footer>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/dashboard.js"></script>
+</body>
+</html>

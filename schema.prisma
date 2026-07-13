@@ -1,0 +1,82 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String   @id @default(cuid())
+  email       String   @unique
+  password    String
+  fullName    String
+  phoneNumber String   @unique
+  createdAt   DateTime @default(now())
+  orders      Order[]
+}
+
+model Order {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id])
+  serviceId       String
+  service         Service  @relation(fields: [serviceId], references: [id])
+  targetUrl       String
+  quantity        Int
+  serviceType     String   @default("DRIP")
+  countryTarget   String   @default("CM")
+  status          String   @default("PENDING")
+  currentCount    Int      @default(0)
+  deliveredCount  Int      @default(0)
+  createdAt       DateTime @default(now())
+  completedAt     DateTime?
+}
+
+model Service {
+  id            String        @id @default(cuid())
+  name          String
+  category      String
+  description   String?
+  serviceType   String        @default("DRIP")
+  minOrder      Int           @default(10)
+  maxOrder      Int           @default(10000)
+  isActive      Boolean       @default(true)
+  orders        Order[]
+  createdAt     DateTime      @default(now())
+}
+
+model BotProfile {
+  id          String   @id @default(cuid())
+  username    String   @unique
+  password    String
+  platform    String
+  fullName    String?
+  bio         String?
+  profilePic  String?
+  email       String?
+  phoneNumber String?
+  country     String?
+  isActive    Boolean  @default(true)
+  isLoggedIn  Boolean  @default(false)
+  lastUsed    DateTime?
+  createdAt   DateTime @default(now())
+  proxyId     String?  
+  proxy       Proxy?   @relation(fields: [proxyId], references: [id])
+}
+
+model Proxy {
+  id          String    @id @default(cuid())
+  ip          String    @unique
+  port        Int
+  protocol    String
+  countryCode String
+  username    String?
+  password    String?
+  lastUsed    DateTime?
+  failsCount  Int       @default(0)
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  bots        BotProfile[]
+}
