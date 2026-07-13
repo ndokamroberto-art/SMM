@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const orderController = require('../controllers/orderController');
+const orderController = require('./orderController');  // ← CHANGED THIS PATH
 
-// NO AUTHENTICATION REQUIRED - Anyone can order
+// ALL ROUTES ARE PUBLIC - NO AUTH NEEDED
 router.get('/services', orderController.getAvailableServices);
 router.post('/create', orderController.createOrder);
-router.get('/:id', orderController.getOrderStatus);
 router.get('/', orderController.getOrders);
+router.get('/:id', orderController.getOrderStatus);
 
 module.exports = router;
