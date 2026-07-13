@@ -1,5 +1,6 @@
-const prisma = require('../config/database');
-const OrderProcessor = require('../services/orderProcessor');
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
+const OrderProcessor = require('./orderProcessor');
 
 // Get available services (FREE - no authentication needed)
 exports.getAvailableServices = async (req, res) => {
@@ -38,22 +39,18 @@ exports.createOrder = async (req, res) => {
       });
     }
 
-    // Find or create user (auto-register if needed)
-    let user = req.user;
-    if (!user) {
-      // Auto-create user for anonymous orders
-      const guestEmail = `guest_${Date.now()}@temp.com`;
-      user = await prisma.user.create({
-        data: {
-          email: guestEmail,
-          password: 'auto_generated',
-          fullName: `Guest ${Math.floor(Math.random() * 10000)}`,
-          phoneNumber: `237${Math.floor(Math.random() * 90000000) + 10000000}`
-        }
-      });
-    }
+    // Auto-create user for anonymous orders
+    const guestEmail = `guest_${Date.now()}_${Math.random().toString(36).substring(7)}@temp.com`;
+    const user = await prisma.user.create({
+      data: {
+        email: guestEmail,
+        password: 'auto_generated_free_panel',
+        fullName: `Guest_${Math.floor(Math.random() * 10000)}`,
+        phoneNumber: `237${Math.floor(Math.random() * 90000000) + 10000000}`
+      }
+    });
 
-    // Create order with NO PAYMENT
+    // Create order with NO PAYMENT - FREE
     const order = await prisma.order.create({
       data: {
         userId: user.id,
@@ -62,11 +59,12 @@ exports.createOrder = async (req, res) => {
         quantity,
         serviceType: serviceType || 'DRIP',
         countryTarget: countryTarget || 'CM',
-        status: 'PENDING'
+        status: 'PENDING',
+        priceXaf: 0
       }
     });
 
-    // Process order IMMEDIATELY - no queue, no waiting
+    // Process order IMMEDIATELY
     const result = await OrderProcessor.queueOrder(order.id);
 
     // Get updated order
@@ -75,11 +73,15 @@ exports.createOrder = async (req, res) => {
       include: { service: true }
     });
 
+    const countryName = getCountryName(order.countryTarget);
+
     res.json({
       success: true,
       order: updatedOrder,
-      message: '✅ Order completed instantly!',
-      profilesDelivered: updatedOrder.deliveredCount
+      message: `✅ Order completed instantly with ${updatedOrder.deliveredCount || 0} ${countryName} profiles!`,
+      profilesDelivered: updatedOrder.deliveredCount || 0,
+      country: countryName,
+      countryFlag: getCountryFlag(order.countryTarget)
     });
   } catch (error) {
     console.error('Create order error:', error);
@@ -87,11 +89,10 @@ exports.createOrder = async (req, res) => {
   }
 };
 
-// Get user's orders
+// Get orders
 exports.getOrders = async (req, res) => {
   try {
     const orders = await prisma.order.findMany({
-      where: { userId: req.user.id },
       include: { service: true },
       orderBy: { createdAt: 'desc' },
       take: 50
@@ -122,3 +123,22 @@ exports.getOrderStatus = async (req, res) => {
     res.status(500).json({ error: 'Failed to get order status' });
   }
 };
+
+// Helper functions
+function getCountryName(code) {
+  const names = {
+    'CM': 'Cameroon', 'US': 'United States', 'GB': 'United Kingdom', 'FR': 'France',
+    'AU': 'Australia', 'CA': 'Canada', 'NG': 'Nigeria', 'ZA': 'South Africa',
+    'KE': 'Kenya', 'SN': 'Senegal', 'CI': 'Ivory Coast', 'GH': 'Ghana'
+  };
+  return names[code] || code;
+}
+
+function getCountryFlag(code) {
+  const flags = {
+    'CM': '🇨🇲', 'US': '🇺🇸', 'GB': '🇬🇧', 'FR': '🇫🇷',
+    'AU': '🇦🇺', 'CA': '🇨🇦', 'NG': '🇳🇬', 'ZA': '🇿🇦',
+    'KE': '🇰🇪', 'SN': '🇸🇳', 'CI': '🇨🇮', 'GH': '🇬🇭'
+  };
+  return flags[code] || '🌍';
+}
