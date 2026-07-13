@@ -1,6 +1,6 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
-const OrderProcessor = require('./orderProcessor');
+const OrderProcessor = require('./orderprocessor');
 
 // Get available services (FREE - no authentication needed)
 exports.getAvailableServices = async (req, res) => {
