@@ -1,15 +1,11 @@
 {
   "name": "smm-cameroon-free",
   "version": "3.0.0",
-  "description": "Free SMM Panel - Instant Orders, Country Matching, Human Behavior",
-  "main": "src/app.js",
+  "description": "Free SMM Panel",
+  "main": "app.js",
   "scripts": {
-    "start": "node src/app.js",
-    "dev": "nodemon src/app.js",
-    "migrate": "prisma migrate deploy",
-    "generate": "prisma generate",
-    "seed": "node prisma/seed.js",
-    "build": "npm install && npx prisma generate"
+    "start": "node app.js",
+    "dev": "nodemon app.js"
   },
   "dependencies": {
     "@prisma/client": "^5.0.0",
@@ -27,8 +23,5 @@
   },
   "devDependencies": {
     "nodemon": "^3.0.1"
-  },
-  "prisma": {
-    "seed": "node prisma/seed.js"
   }
 }
